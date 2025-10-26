@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '~/components/ui/Dialog';
+} from '../ui/Dialog';
 
 export default function Footer({ className }: { className?: string }) {
   const { data: config } = useGetStartupConfig();
