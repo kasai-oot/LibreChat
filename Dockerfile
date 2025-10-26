@@ -45,6 +45,8 @@ RUN ls -la /app/librechat.yaml || echo "ERROR: librechat.yaml not found after CO
 RUN \
     # React client build
     NODE_OPTIONS="--max-old-space-size=2048" npm run frontend; \
+    echo "Listing contents of /app/client/dist after build:"; \
+    ls -la /app/client/dist; \
     npm prune --production; \
     npm cache clean --force
 
