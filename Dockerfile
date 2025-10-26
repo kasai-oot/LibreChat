@@ -38,6 +38,10 @@ RUN \
 
 COPY --chown=node:node . .
 
+# Debug: Check if librechat.yaml exists
+RUN ls -la /app/librechat.yaml || echo "ERROR: librechat.yaml not found after COPY" && \
+    ls -la /app/ | grep librechat || echo "No librechat files found"
+
 RUN \
     # React client build
     NODE_OPTIONS="--max-old-space-size=2048" npm run frontend; \
