@@ -1,38 +1,82 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import TagManager from 'react-gtm-module';
 import { Constants } from 'librechat-data-provider';
 import { useGetStartupConfig } from '~/data-provider';
 import { useLocalize } from '~/hooks';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '~/components/ui/Dialog';
 
 export default function Footer({ className }: { className?: string }) {
   const { data: config } = useGetStartupConfig();
   const localize = useLocalize();
 
+  const [ppModalOpen, setPpModalOpen] = useState(false);
+  const [tosModalOpen, setTosModalOpen] = useState(false);
+
   const privacyPolicy = config?.interface?.privacyPolicy;
   const termsOfService = config?.interface?.termsOfService;
 
-  const privacyPolicyRender = privacyPolicy?.externalUrl != null && (
-    <a
-      className="text-text-secondary underline"
-      href={privacyPolicy.externalUrl}
-      target={privacyPolicy.openNewTab === true ? '_blank' : undefined}
-      rel="noreferrer"
-    >
-      {localize('com_ui_privacy_policy')}
-    </a>
-  );
+  const privacyPolicyRender =
+    privacyPolicy?.externalUrl != null && privacyPolicy.externalUrl !== '' ? (
+      <a
+        className="text-text-secondary underline"
+        href={privacyPolicy.externalUrl}
+        target={privacyPolicy.openNewTab === true ? '_blank' : undefined}
+        rel="noreferrer"
+      >
+        {localize('com_ui_privacy_policy')}
+      </a>
+    ) : privacyPolicy?.markdownContent != null ? (
+      <Dialog open={ppModalOpen} onOpenChange={setPpModalOpen}>
+        <DialogTrigger asChild>
+          <button className="text-text-secondary underline" type="button">
+            {localize('com_ui_privacy_policy')}
+          </button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{localize('com_ui_privacy_policy')}</DialogTitle>
+          </DialogHeader>
+          <div className="prose dark:prose-invert max-h-[70vh] overflow-y-auto">
+            <ReactMarkdown>{privacyPolicy.markdownContent}</ReactMarkdown>
+          </div>
+        </DialogContent>
+      </Dialog>
+    ) : null;
 
-  const termsOfServiceRender = termsOfService?.externalUrl != null && (
-    <a
-      className="text-text-secondary underline"
-      href={termsOfService.externalUrl}
-      target={termsOfService.openNewTab === true ? '_blank' : undefined}
-      rel="noreferrer"
-    >
-      {localize('com_ui_terms_of_service')}
-    </a>
-  );
+  const termsOfServiceRender =
+    termsOfService?.externalUrl != null && termsOfService.externalUrl !== '' ? (
+      <a
+        className="text-text-secondary underline"
+        href={termsOfService.externalUrl}
+        target={termsOfService.openNewTab === true ? '_blank' : undefined}
+        rel="noreferrer"
+      >
+        {localize('com_ui_terms_of_service')}
+      </a>
+    ) : termsOfService?.markdownContent != null ? (
+      <Dialog open={tosModalOpen} onOpenChange={setTosModalOpen}>
+        <DialogTrigger asChild>
+          <button className="text-text-secondary underline" type="button">
+            {localize('com_ui_terms_of_service')}
+          </button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{localize('com_ui_terms_of_service')}</DialogTitle>
+          </DialogHeader>
+          <div className="prose dark:prose-invert max-h-[70vh] overflow-y-auto">
+            <ReactMarkdown>{termsOfService.markdownContent}</ReactMarkdown>
+          </div>
+        </DialogContent>
+      </Dialog>
+    ) : null;
 
   const mainContentParts = (
     typeof config?.customFooter === 'string'

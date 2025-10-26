@@ -3,6 +3,7 @@ const axios = require('axios');
 const yaml = require('js-yaml');
 const keyBy = require('lodash/keyBy');
 const { loadYaml } = require('@librechat/api');
+const fs = require('fs');
 const { logger } = require('@librechat/data-schemas');
 const {
   CacheKeys,
@@ -66,6 +67,43 @@ async function loadCustomConfig(printConfig = true) {
       i === 0 && i++;
       return null;
     }
+  }
+
+  const { interface: interfaceConfig } = customConfig;
+  if (interfaceConfig) {
+    const { privacyPolicy, termsOfService } = interfaceConfig;
+
+    if (privacyPolicy && privacyPolicy.filePath) {
+      const policyPath = path.resolve(projectRoot, privacyPolicy.filePath);
+      if (fs.existsSync(policyPath)) {
+        privacyPolicy.markdownContent = fs.readFileSync(policyPath, 'utf8');
+        logger.info(`Loaded privacy policy from ${policyPath}`);
+      } else {
+        logger.warn(`Privacy policy file not found at ${policyPath}`);
+      }
+    }
+
+    if (termsOfService && termsOfService.filePath) {
+      const tosPath = path.resolve(projectRoot, termsOfService.filePath);
+      if (fs.existsSync(tosPath)) {
+        termsOfService.markdownContent = fs.readFileSync(tosPath, 'utf8');
+        logger.info(`Loaded terms of service from ${tosPath}`);
+      } else {
+        logger.warn(`Terms of service file not found at ${tosPath}`);
+      }
+    }
+  }
+
+  const modalContentFilePath = customConfig?.interface?.termsOfService?.modalContentFile;
+  if (modalContentFilePath) {
+    delete customConfig.interface.termsOfService.modalContentFile;
+  }
+
+  const privacyPolicyContentFilePath = customConfig?.interface?.privacyPolicy?.modalContentFile;
+  if (privacyPolicyContentFilePath) {
+    // Note: The original schema may not support modalContent for privacyPolicy.
+    // This change assumes it can be added and rendered by the client if present.
+    delete customConfig.interface.privacyPolicy.modalContentFile;
   }
 
   const result = configSchema.strict().safeParse(customConfig);
