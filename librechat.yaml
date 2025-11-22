@@ -79,7 +79,8 @@ interface:
 
 # Example Registration Object Structure (optional)
 registration:
-  socialLogins: ['github', 'google', 'discord', 'openid', 'facebook', 'apple', 'saml']
+  socialLogins: ['google', 'saml']
+  # socialLogins: ['github', 'google', 'discord', 'openid', 'facebook', 'apple', 'saml']
   # allowedDomains:
   # - "gmail.com"
 
@@ -185,7 +186,7 @@ endpoints:
   #   minRelevanceScore: 0.45
   #   # (optional) Agent Capabilities available to all users. Omit the ones you wish to exclude. Defaults to list below.
   #   capabilities: ["execute_code", "file_search", "actions", "tools"]
-  custom:
+  # custom:
     # Groq Example
 #     - name: 'groq'
 #       apiKey: '${GROQ_API_KEY}'
