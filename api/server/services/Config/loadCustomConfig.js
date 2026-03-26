@@ -1,3 +1,4 @@
+const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
 const yaml = require('js-yaml');
@@ -125,6 +126,33 @@ https://www.librechat.ai/docs/configuration/stt_tts`);
 
   if (result.data.modelSpecs) {
     customConfig.modelSpecs = result.data.modelSpecs;
+  }
+
+
+  // Load markdown content from filePath for privacyPolicy and termsOfService
+  const { interface: interfaceConfig } = customConfig;
+  if (interfaceConfig) {
+    const { privacyPolicy, termsOfService } = interfaceConfig;
+
+    if (privacyPolicy && privacyPolicy.filePath) {
+      const policyPath = path.resolve(projectRoot, privacyPolicy.filePath);
+      if (fs.existsSync(policyPath)) {
+        privacyPolicy.markdownContent = fs.readFileSync(policyPath, 'utf8');
+        logger.info(`Loaded privacy policy from ${policyPath}`);
+      } else {
+        logger.warn(`Privacy policy file not found at ${policyPath}`);
+      }
+    }
+
+    if (termsOfService && termsOfService.filePath) {
+      const tosPath = path.resolve(projectRoot, termsOfService.filePath);
+      if (fs.existsSync(tosPath)) {
+        termsOfService.markdownContent = fs.readFileSync(tosPath, 'utf8');
+        logger.info(`Loaded terms of service from ${tosPath}`);
+      } else {
+        logger.warn(`Terms of service file not found at ${tosPath}`);
+      }
+    }
   }
 
   return customConfig;
