@@ -6,14 +6,12 @@ const { loadYaml } = require('@librechat/api');
 const fs = require('fs');
 const { logger } = require('@librechat/data-schemas');
 const {
-  CacheKeys,
   configSchema,
   paramSettings,
   EImageOutputType,
   agentParamSettings,
   validateSettingDefinitions,
 } = require('librechat-data-provider');
-const getLogStores = require('~/cache/getLogStores');
 
 const projectRoot = path.resolve(__dirname, '..', '..', '..', '..');
 const defaultConfigPath = path.resolve(projectRoot, 'librechat.yaml');
@@ -156,7 +154,6 @@ https://www.librechat.ai/docs/configuration/stt_tts`);
   (customConfig.endpoints?.custom ?? [])
     .filter((endpoint) => endpoint.customParams)
     .forEach((endpoint) => parseCustomParams(endpoint.name, endpoint.customParams));
-
 
   if (result.data.modelSpecs) {
     customConfig.modelSpecs = result.data.modelSpecs;
